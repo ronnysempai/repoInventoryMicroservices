@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ProductService/ProductService.csproj" Id="4fa44d15-fc53-4f55-8e7d-f61b55083482" />
+  <Project Path="TransactionService/TransactionService.csproj" Id="4c04eba6-e9fc-47e0-b8a5-7408802bcb1f" />
+</Solution>

@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "InventoryDb#2025", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  productservice:
+    build: ./src/ProductService
+    depends_on:
+      mssql:
+        condition: service_started
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=(localdb)\\MSSQLLocalDB;Database=ProductDB;Trusted_Connection=True;TrustServerCertificate=True;
+    ports:
+      - "5079:80"
+
+  transactionservice:
+    build: ./src/TransactionService
+    depends_on:
+      - mssql
+      - productservice
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=(localdb)\\MSSQLLocalDB;Database=TransactionDB;Trusted_Connection=True;TrustServerCertificate=True;
+      - PRODUCTS_BASE_URL=http://productservice
+    ports:
+      - 5037:80"
+
+volumes:
+  mssql-data:

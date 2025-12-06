@@ -1,0 +1,25 @@
+CREATE DATABASE InventoryDb;
+GO
+USE InventoryDb;
+GO
+
+CREATE TABLE Products (
+    Id INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(500) NULL,
+    Category NVARCHAR(100) NULL,
+    ImageUrl NVARCHAR(300) NULL,
+    Price DECIMAL(18,2) NOT NULL DEFAULT 0,
+    Stock INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE InventoryTransactions (
+    Id INT IDENTITY PRIMARY KEY,
+    Date DATETIME2 NOT NULL,
+    Type NVARCHAR(20) NOT NULL,
+    ProductId INT NOT NULL,
+    Quantity INT NOT NULL,
+    UnitPrice DECIMAL(18,2) NOT NULL,
+    Detail NVARCHAR(500) NULL,
+    CONSTRAINT FK_Trans_Product FOREIGN KEY (ProductId) REFERENCES Products(Id)
+);
