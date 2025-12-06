@@ -54,7 +54,7 @@
   },
   {
     "ContainingType": "ProductService.Controllers.ProductsController",
-    "Method": "Update",
+    "Method": "UpdateProduct",
     "RelativePath": "api/products/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
@@ -66,8 +66,8 @@
         "IsRequired": true
       },
       {
-        "Name": "dto",
-        "Type": "ProductService.DTOs.ProductUpdateDto",
+        "Name": "updatedProduct",
+        "Type": "ProductService.Models.Product",
         "IsRequired": true
       }
     ],
@@ -75,7 +75,7 @@
   },
   {
     "ContainingType": "ProductService.Controllers.ProductsController",
-    "Method": "Delete",
+    "Method": "DeleteProduct",
     "RelativePath": "api/products/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,

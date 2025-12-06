@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProductService.Data;
 using ProductService.DTOs;
 using ProductService.Models;
 using ProductService.Repositories;
+using System;
 
 namespace ProductService.Controllers
 {
@@ -10,10 +13,13 @@ namespace ProductService.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _repo;
+        private readonly ProductDbContext _context;
 
-        public ProductsController(IProductRepository repo)
+
+        public ProductsController(IProductRepository repo, ProductDbContext context)
         {
             _repo = repo;
+            _context = context;
         }
 
         [HttpGet]
@@ -48,28 +54,39 @@ namespace ProductService.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateDto dto)
+        public async Task<IActionResult> UpdateProduct(int id, Product updatedProduct)
         {
-            var product = await _repo.GetByIdAsync(id);
-            if (product == null) return NotFound();
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                return NotFound("Product not found");
 
-            product.Name = dto.Name;
-            product.Description = dto.Description;
-            product.Category = dto.Category;
-            product.ImageUrl = dto.ImageUrl;
-            product.Price = dto.Price;
-            product.Stock = dto.Stock;
+            product.Name = updatedProduct.Name;
+            product.Description = updatedProduct.Description;
+            product.Category = updatedProduct.Category;
+            product.Price = updatedProduct.Price;
+            product.Stock = updatedProduct.Stock;
+            product.ImageUrl = updatedProduct.ImageUrl;
 
-            await _repo.UpdateAsync(product);
+            await _context.SaveChangesAsync();
 
             return Ok(product);
         }
 
+
+        
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            await _repo.DeleteAsync(id);
-            return Ok(new { message = "Producto eliminado correctamente" });
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                return NotFound("Product not found");
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Product deleted successfully" });
         }
+
     }
 }
